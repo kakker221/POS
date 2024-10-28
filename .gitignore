@@ -1,0 +1,21 @@
+# Ignore virtual environment folder
+venv/
+
+# Ignore environment variable files
+*.env
+
+# Ignore Python cache files and compiled files
+__pycache__/
+*.pyc
+
+# Ignore macOS-specific files (if relevant)
+.DS_Store
+
+# Ignore SQL files
+*.sql
+
+# Ignore Alembic migration versions
+alembic/versions/*
+
+# Ignore SQLite database files
+*.db
