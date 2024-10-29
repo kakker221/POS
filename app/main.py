@@ -3,13 +3,15 @@ import logging
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.crud.crud_user import create_user, get_user, get_users, update_user, delete_user
-
+from app.routers import auth_google
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+app.include_router(auth_google.router, prefix="/auth")
 
 @app.get("/")
 def read_root():

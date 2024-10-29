@@ -3,11 +3,16 @@ import json
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+import os
+
+env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../.env'))
+load_dotenv(dotenv_path=env_path)
+
+secret_name = os.getenv("AWS_DATABASE_SECRET_NAME")
+region_name = os.getenv("AWS_DATABASE_SECRETS_REGION_NAME")
 
 def get_secret():
-    secret_name = "dev/posapp/db"
-    region_name = "us-east-1"
-
     # Create a Secrets Manager client
     client = boto3.client('secretsmanager', region_name=region_name)
 

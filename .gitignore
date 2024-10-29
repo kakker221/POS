@@ -19,3 +19,6 @@ alembic/versions/*
 
 # Ignore SQLite database files
 *.db
+
+#Ignore env files
+.env
