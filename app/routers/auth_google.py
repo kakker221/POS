@@ -4,28 +4,18 @@ from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from google.auth.transport import requests as google_requests
 import os
-import boto3
-import json
+from app.utils.utils import get_secret, get_env_path
 from dotenv import load_dotenv
 
-env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../.env'))
+env_path = get_env_path()
 load_dotenv(dotenv_path=env_path)
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 secret_name = os.getenv("AWS_AUTH_SECRET_NAME")
 region_name = os.getenv("AWS_AUTH_SECRETS_REGION_NAME")
 
-def get_secret():
-    client = boto3.client('secretsmanager', region_name=region_name)
-    try:
-        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
-        secret = get_secret_value_response['SecretString']
-        return json.loads(secret)
-    except Exception as e:
-        raise Exception(f"Error retrieving secret: {str(e)}")
-
 router = APIRouter()
 
-secrets = get_secret()
+secrets = get_secret(secret_name, region_name)
 CLIENT_ID = secrets.get('client_id')
 CLIENT_SECRET = secrets.get('client_secret')
 AUTH_URI = secrets.get('auth_uri')
@@ -68,12 +58,10 @@ def callback(request: Request):
     )
     flow.redirect_uri = REDIRECT_URIS  # Use the first redirect URI
     try:
-        # Exchange the authorization code for a token
         flow.fetch_token(authorization_response=str(request.url))
     except Exception as e:
         raise HTTPException(status_code=400, detail="Failed to fetch token")
 
-    # Get the user's credentials
     credentials = flow.credentials
 
     try:
@@ -85,5 +73,4 @@ def callback(request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail="Failed to verify token")
 
-    # Return user info
     return {"email": user_info['email'], "name": user_info['name']}
